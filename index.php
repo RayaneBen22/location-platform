@@ -16,6 +16,7 @@ $categories = $query->fetchAll();
 </head>
 <body>
     <h1>Nos catégories</h1>
+    <a href="catalogue.php">Voir les articles à louer</a>
 
     <?php if (empty($categories)): ?>
         <p>Aucune catégorie disponible.</p>
