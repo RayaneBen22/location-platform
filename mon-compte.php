@@ -24,6 +24,11 @@ if (!isset($_SESSION['user'])) {
     <p>Bienvenue dans votre espace personnel.</p>
 
     <a href="index.php">Retour à l’accueil</a>
+    <?php if ($_SESSION['user']['role'] === 'agent'): ?>
+    <p>
+        <a href="agent/index.php">Accéder à l’espace agent</a>
+    </p>
+    <?php endif; ?>
     <form action="deconnexion.php" method="post">
     <button type="submit">Se déconnecter</button>
 </form>
