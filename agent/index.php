@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $articles = $pdo->query(
-    'SELECT name, daily_price, status, is_active
+    'SELECT id, name, daily_price, status, is_active
      FROM articles
      ORDER BY name'
 )->fetchAll();
@@ -145,6 +145,17 @@ $categories = $pdo->query(
                     <?= htmlspecialchars(str_replace('_', ' ', $article['status']), ENT_QUOTES, 'UTF-8') ?>
                     —
                     <?= $article['is_active'] ? 'Actif' : 'Désactivé' ?>
+                    <a href="modifier-article.php?id=<?= (int) $article['id'] ?>">Modifier</a>
+                    <form action="changer-activation.php" method="post">
+    <input type="hidden" name="article_token"
+           value="<?= htmlspecialchars($_SESSION['article_token'], ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="id" value="<?= (int) $article['id'] ?>">
+    <input type="hidden" name="is_active" value="<?= $article['is_active'] ? '0' : '1' ?>">
+
+    <button type="submit">
+        <?= $article['is_active'] ? 'Désactiver' : 'Réactiver' ?>
+    </button>
+</form>
                 </li>
             <?php endforeach; ?>
         </ul>
