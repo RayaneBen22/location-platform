@@ -1,0 +1,107 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f4f7f6;
+    color: #172b26;
+    font: 1rem/1.5 "Inter", system-ui, sans-serif;
+}
+
+.catalogue {
+    max-width: 70rem;
+    margin: 0 auto;
+    padding: clamp(1rem, 4vw, 3rem);
+}
+
+.catalogue-header a,
+.article-category {
+    color: #24604f;
+}
+
+h1 {
+    margin: 0.75rem 0 1.5rem;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+}
+
+.catalogue-filter {
+    margin-bottom: 1.5rem;
+}
+
+.catalogue-filter label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-controls select,
+.filter-controls button {
+    max-width: 100%;
+    border: 1px solid #53786b;
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    font: inherit;
+}
+
+.filter-controls select {
+    background: #fff;
+    color: inherit;
+}
+
+.filter-controls button {
+    background: #24604f;
+    color: #fff;
+    cursor: pointer;
+}
+
+.filter-controls button:hover {
+    background: #174537;
+}
+
+:focus-visible {
+    outline: 3px solid #24604f;
+    outline-offset: 3px;
+}
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+}
+
+.article-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 1px solid #cfdbd6;
+    border-radius: 0.75rem;
+    background: #fff;
+    overflow-wrap: anywhere;
+}
+
+.article-card h2,
+.article-card p {
+    margin: 0 0 0.5rem;
+}
+
+.article-card h2 {
+    font-size: 1.25rem;
+}
+
+.article-category {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.article-card .article-price {
+    margin: auto 0 0;
+    padding-top: 0.75rem;
+}
