@@ -55,50 +55,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
+    <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-    <h1>Créer un compte</h1>
-    <?php if ($message !== ''): ?>
-    <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
-<?php endif; ?>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Navigation principale">
+            <a class="brand" href="index.php">Plateforme de location</a>
+            <div class="nav-links">
+                <a href="catalogue.php">Catalogue</a>
+                <a href="mon-compte.php">Mon compte</a>
+            </div>
+        </nav>
+    </header>
+    <main class="page page--compact">
+        <div class="panel">
+            <h1>Créer un compte</h1>
+            <?php if ($message !== ''): ?>
+                <p class="notice" role="status"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
 
-    <form action="inscription.php" method="post">
-        <div>
-            <label for="name">Nom complet</label>
-            <input
-                type="text"
-                id="name"
-                name="name"
-                maxlength="100"
-                required
-            >
+            <form class="form-stack" action="inscription.php" method="post">
+                <div>
+                    <label for="name">Nom complet</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        maxlength="255"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="password">Mot de passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        minlength="8"
+                        required
+                    >
+                </div>
+
+                <button type="submit">Créer mon compte</button>
+            </form>
+
+            <p><a href="index.php">Retour à l’accueil</a></p>
         </div>
-
-        <div>
-            <label for="email">Email</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                maxlength="255"
-                required
-            >
-        </div>
-
-        <div>
-            <label for="password">Mot de passe</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                minlength="8"
-                required
-            >
-        </div>
-
-        <button type="submit">Créer mon compte</button>
-    </form>
-
-    <p><a href="index.php">Retour à l’accueil</a></p>
+    </main>
 </body>
 </html>

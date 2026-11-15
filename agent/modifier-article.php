@@ -92,47 +92,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier un article</title>
+    <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
-    <h1>Modifier un article</h1>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Navigation principale">
+            <a class="brand" href="../index.php">Plateforme de location</a>
+            <div class="nav-links">
+                <a href="../catalogue.php">Catalogue</a>
+                <a href="../mon-compte.php">Mon compte</a>
+            </div>
+        </nav>
+    </header>
+    <main class="page page--compact">
+        <div class="panel">
+            <h1>Modifier un article</h1>
 
-    <?php if ($message !== ''): ?>
-        <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
-    <?php endif; ?>
+            <?php if ($message !== ''): ?>
+                <p class="notice" role="status"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
 
-    <form action="modifier-article.php?id=<?= $id ?>" method="post">
-        <input type="hidden" name="article_token"
-               value="<?= htmlspecialchars($_SESSION['article_token'], ENT_QUOTES, 'UTF-8') ?>">
+            <form class="form-stack" action="modifier-article.php?id=<?= $id ?>" method="post">
+                <input type="hidden" name="article_token"
+                       value="<?= htmlspecialchars($_SESSION['article_token'], ENT_QUOTES, 'UTF-8') ?>">
 
-        <p>
-            <label for="name">Nom de l’article</label>
-            <input type="text" id="name" name="name" maxlength="150"
-                   value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" required>
-        </p>
+                <p>
+                    <label for="name">Nom de l’article</label>
+                    <input type="text" id="name" name="name" maxlength="150"
+                           value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" required>
+                </p>
 
-        <p>
-            <label for="category_id">Catégorie</label>
-            <select id="category_id" name="category_id" required>
-                <option value="">Choisir une catégorie</option>
-                <?php foreach ($categories as $category): ?>
-                    <option value="<?= (int) $category['id'] ?>"
-                        <?= (int) $category['id'] === $categoryId ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </p>
+                <p>
+                    <label for="category_id">Catégorie</label>
+                    <select id="category_id" name="category_id" required>
+                        <option value="">Choisir une catégorie</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?= (int) $category['id'] ?>"
+                                <?= (int) $category['id'] === $categoryId ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
 
-        <p>
-            <label for="daily_price">Prix par jour</label>
-            <input type="number" id="daily_price" name="daily_price"
-                   min="0.01" max="99999999.99" step="0.01"
-                   value="<?= htmlspecialchars($dailyPrice, ENT_QUOTES, 'UTF-8') ?>" required>
-        </p>
+                <p>
+                    <label for="daily_price">Prix par jour</label>
+                    <input type="number" id="daily_price" name="daily_price"
+                           min="0.01" max="99999999.99" step="0.01"
+                           value="<?= htmlspecialchars($dailyPrice, ENT_QUOTES, 'UTF-8') ?>" required>
+                </p>
 
-        <button type="submit">Enregistrer</button>
-    </form>
+                <button type="submit">Enregistrer</button>
+            </form>
 
-    <p><a href="index.php">Retour aux articles</a></p>
+            <p><a href="index.php">Retour aux articles</a></p>
+        </div>
+    </main>
 </body>
 </html>

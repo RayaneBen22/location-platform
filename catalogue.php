@@ -30,12 +30,20 @@ $articles = $query->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalogue</title>
-    <link rel="stylesheet" href="assets/catalogue.css">
+    <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-    <main class="catalogue">
-        <header class="catalogue-header">
-            <a href="index.php">← Accueil</a>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Navigation principale">
+            <a class="brand" href="index.php">Plateforme de location</a>
+            <div class="nav-links">
+                <a href="catalogue.php">Catalogue</a>
+                <a href="mon-compte.php">Mon compte</a>
+            </div>
+        </nav>
+    </header>
+    <main class="page">
+        <header class="page-heading">
             <h1>Nos articles à louer</h1>
         </header>
 
@@ -55,7 +63,7 @@ $articles = $query->fetchAll();
         </form>
 
         <?php if (empty($articles)): ?>
-            <p><?= $categoryId ? 'Aucun article dans cette catégorie.' : 'Aucun article disponible dans le catalogue.' ?></p>
+            <p class="notice"><?= $categoryId ? 'Aucun article dans cette catégorie.' : 'Aucun article disponible dans le catalogue.' ?></p>
         <?php else: ?>
             <div class="article-grid">
                 <?php foreach ($articles as $article): ?>
