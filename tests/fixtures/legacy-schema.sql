@@ -1,0 +1,93 @@
+CREATE DATABASE IF NOT EXISTS location_platform
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE location_platform;
+
+CREATE TABLE users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) DEFAULT NULL,
+    role ENUM('client', 'agent') NOT NULL DEFAULT 'client',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+  CREATE TABLE categories (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+  CREATE TABLE articles (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category_id INT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    description TEXT DEFAULT NULL,
+    characteristics TEXT DEFAULT NULL,
+    daily_price DECIMAL(10, 2) NOT NULL,
+    condition_description VARCHAR(255) DEFAULT NULL,
+    status ENUM('disponible', 'en_location', 'en_maintenance')
+        NOT NULL DEFAULT 'disponible',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_articles_category
+        FOREIGN KEY (category_id) REFERENCES categories(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_articles_daily_price
+        CHECK (daily_price > 0)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+  CREATE TABLE article_images (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    article_id INT UNSIGNED NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_article_images_article
+        FOREIGN KEY (article_id) REFERENCES articles(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+  CREATE TABLE locations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    article_id INT UNSIGNED NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    daily_price DECIMAL(10, 2) NOT NULL,
+    total_price DECIMAL(12, 2) NOT NULL,
+    status ENUM(
+        'en_attente',
+        'confirmee',
+        'en_cours',
+        'terminee',
+        'annulee',
+        'refusee'
+    ) NOT NULL DEFAULT 'en_attente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_locations_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_locations_article
+        FOREIGN KEY (article_id) REFERENCES articles(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_locations_dates
+        CHECK (end_date > start_date),
+
+    CONSTRAINT chk_locations_prices
+        CHECK (daily_price > 0 AND total_price > 0)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

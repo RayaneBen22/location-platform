@@ -1,0 +1,13 @@
+{
+  "reviewed_at": "2026-11-24",
+  "currency": "MAD",
+  "status": "indicative_owner_validation_required",
+  "vehicles": [
+    {"brand": "Audi", "model": "A3", "daily_price": "800.00"},
+    {"brand": "BMW", "model": "Série 3", "daily_price": "1000.00"},
+    {"brand": "Mercedes-Benz", "model": "Classe C", "daily_price": "1200.00"},
+    {"brand": "Peugeot", "model": "208", "daily_price": "300.00"},
+    {"brand": "Renault", "model": "Clio", "daily_price": "300.00"},
+    {"brand": "Toyota", "model": "Corolla", "daily_price": "450.00"}
+  ]
+}

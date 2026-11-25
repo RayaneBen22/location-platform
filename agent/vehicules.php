@@ -1,0 +1,13 @@
+<?php
+
+require_once __DIR__ . '/../app/agent.php';
+$vehicles = database()->query(vehicleSelect() . ' WHERE a.vehicle_model_id IS NOT NULL ORDER BY b.name, m.name, a.id DESC')->fetchAll();
+$history = database()->query('SELECT id, name, is_active FROM articles WHERE vehicle_model_id IS NULL ORDER BY id')->fetchAll();
+pageHeader('Gestion des voitures');
+?>
+<section class="container page-intro"><p class="eyebrow">ESPACE ÉQUIPE</p><h1>Votre parc automobile.</h1><p class="lead">Des informations précises, des voitures prêtes pour la route.</p></section>
+<div class="container section-compact"><?php agentNavigation('vehicules.php'); ?><div class="section-heading"><h2><?= count($vehicles) ?> voiture(s)</h2><a class="button" href="<?= escape(appUrl('agent/vehicule.php')) ?>">Ajouter une voiture ↗</a></div>
+<?php if (!$vehicles): ?><div class="empty-state"><h3>Construisez votre catalogue.</h3><p>Ajoutez uniquement les voitures dont vous disposez réellement, avec leurs caractéristiques et leurs photos.</p></div><?php else: ?><div class="table-wrap"><table><thead><tr><th>Voiture</th><th>Prix / jour</th><th>État</th><th>Catalogue</th><th>Actions</th></tr></thead><tbody><?php foreach ($vehicles as $vehicle): ?><tr><td><strong><?= escape(vehicleLabel($vehicle)) ?></strong><br><span class="muted">#<?= (int) $vehicle['id'] ?> · <?= escape($vehicle['category_name'] ?? 'À préciser') ?></span></td><td><?= escape(money($vehicle['daily_price'])) ?></td><td><?= escape(statusLabel($vehicle['status'])) ?></td><td><?= $vehicle['is_active'] ? 'Visible' : 'Masquée' ?></td><td><div class="inline-actions"><a class="text-link" href="<?= escape(appUrl('agent/vehicule.php?id=' . (int) $vehicle['id'])) ?>">Modifier</a><form action="<?= escape(appUrl('agent/changer-activation.php')) ?>" method="post"><?= csrfField() ?><input type="hidden" name="id" value="<?= (int) $vehicle['id'] ?>"><input type="hidden" name="is_active" value="<?= $vehicle['is_active'] ? '0' : '1' ?>"><button class="button button-outline button-small" type="submit"><?= $vehicle['is_active'] ? 'Masquer' : 'Afficher' ?></button></form></div></td></tr><?php endforeach; ?></tbody></table></div><?php endif; ?>
+<?php if ($history): ?><details class="panel"><summary><?= count($history) ?> entrée(s) historique(s) conservée(s) hors catalogue</summary><p>Ne rattachez une ancienne entrée à un modèle que si elle représente réellement une voiture. Les anciennes réservations et images sont conservées.</p><ul><?php foreach ($history as $entry): ?><li><?= escape($entry['name']) ?> · <a class="text-link" href="<?= escape(appUrl('agent/vehicule.php?id=' . (int) $entry['id'])) ?>">Vérifier et compléter</a></li><?php endforeach; ?></ul></details><?php endif; ?>
+</div>
+<?php pageFooter(); ?>

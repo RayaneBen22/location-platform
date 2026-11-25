@@ -1,118 +1,39 @@
 <?php
-
-require_once __DIR__ . '/config/database.php';
-
+require_once __DIR__ . '/app/bootstrap.php';
+if (currentUser()) redirectTo('mon-compte.php');
 $message = '';
-
+$values = ['name' => '', 'email' => '', 'phone' => ''];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if ($name === '' || mb_strlen($name) > 100) {
-        $message = 'Le nom doit contenir entre 1 et 100 caractères.';
-    } elseif (
-        !filter_var($email, FILTER_VALIDATE_EMAIL)
-        || strlen($email) > 255
-    ) {
-        $message = 'Veuillez saisir un email valide.';
-    } elseif (strlen($password) < 8 || strlen($password) > 72) {
-        $message = 'Le mot de passe doit contenir entre 8 et 72 octets.';
+    validateCsrf();
+    foreach ($values as $key => $value) $values[$key] = submittedString($_POST, $key);
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+    $confirmation = is_string($_POST['password_confirmation'] ?? null) ? $_POST['password_confirmation'] : '';
+    if ($values['name'] === '' || mb_strlen($values['name']) > 100 || !filter_var($values['email'], FILTER_VALIDATE_EMAIL) || strlen($values['email']) > 255 || ($values['phone'] !== '' && !preg_match('/\A[+0-9 ()-]{6,20}\z/', $values['phone']))) {
+        $message = 'Vérifiez votre nom, votre adresse email et votre téléphone.';
+    } elseif (strlen($password) < 8 || strlen($password) > 72 || $password !== $confirmation) {
+        $message = 'Utilisez 8 à 72 octets et saisissez deux fois le même mot de passe.';
+    } elseif (submittedString($_POST, 'accept_terms') !== '1') {
+        $message = 'Prenez connaissance des conditions de réservation avant de continuer.';
     } else {
-        $query = $pdo->prepare(
-            'SELECT id FROM users WHERE email = :email'
-        );
-
-        $query->execute(['email' => $email]);
-
-        if ($query->fetch()) {
-            $message = 'Cet email est déjà utilisé.';
-        } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            $query = $pdo->prepare(
-                'INSERT INTO users (name, email, password, role)
-                 VALUES (:name, :email, :password, :role)'
-            );
-
-            $query->execute([
-                'name' => $name,
-                'email' => $email,
-                'password' => $hashedPassword,
-                'role' => 'client',
-            ]);
-
-            $message = 'Compte créé avec succès !';
+        try {
+            $query = database()->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (:name, :email, :phone, :password, 'client')");
+            $query->execute(['name' => $values['name'], 'email' => mb_strtolower($values['email']), 'phone' => $values['phone'] ?: null, 'password' => password_hash($password, PASSWORD_DEFAULT)]);
+            flashMessage('Votre compte est créé. Vous pouvez maintenant vous connecter.');
+            redirectTo('connexion.php');
+        } catch (PDOException $exception) {
+            if (!in_array((string) $exception->getCode(), ['23000', '19'], true)) throw $exception;
+            $message = 'Impossible de créer ce compte avec ces informations. Essayez de vous connecter.';
         }
     }
 }
-
+pageHeader('Créer mon compte');
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription</title>
-    <link rel="stylesheet" href="assets/site.css">
-</head>
-<body>
-    <header class="site-header">
-        <nav class="site-nav" aria-label="Navigation principale">
-            <a class="brand" href="index.php">Plateforme de location</a>
-            <div class="nav-links">
-                <a href="catalogue.php">Catalogue</a>
-                <a href="mon-compte.php">Mon compte</a>
-            </div>
-        </nav>
-    </header>
-    <main class="page page--compact">
-        <div class="panel">
-            <h1>Créer un compte</h1>
-            <?php if ($message !== ''): ?>
-                <p class="notice" role="status"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
-            <?php endif; ?>
-
-            <form class="form-stack" action="inscription.php" method="post">
-                <div>
-                    <label for="name">Nom complet</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        maxlength="100"
-                        required
-                    >
-                </div>
-
-                <div>
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        maxlength="255"
-                        required
-                    >
-                </div>
-
-                <div>
-                    <label for="password">Mot de passe</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        minlength="8"
-                        required
-                    >
-                </div>
-
-                <button type="submit">Créer mon compte</button>
-            </form>
-
-            <p><a href="index.php">Retour à l’accueil</a></p>
-        </div>
-    </main>
-</body>
-</html>
+<div class="container auth-layout"><aside class="auth-aside"><p class="eyebrow">BIENVENUE À BORD</p><h2>De nouvelles<br>routes.<br>Un seul compte.</h2><p>Choisissez votre voiture, réservez vos dates et retrouvez chaque trajet au même endroit.</p><img src="<?= escape(appUrl('assets/car-placeholder.svg')) ?>" alt="" width="900" height="550"></aside><section class="auth-form"><p class="eyebrow">ÇA COMMENCE ICI</p><h1>Créons votre espace.</h1><p>Quelques informations, et la route est à vous.</p>
+<?php if ($message): ?><p class="notice notice-error" role="alert"><?= escape($message) ?></p><?php endif; ?>
+<form action="<?= escape(appUrl('inscription.php')) ?>" method="post"><?= csrfField() ?>
+<div class="field"><label for="name">Nom complet</label><input id="name" name="name" maxlength="100" autocomplete="name" value="<?= escape($values['name']) ?>" required></div>
+<div class="field"><label for="email">Adresse email</label><input id="email" name="email" type="email" maxlength="255" autocomplete="email" value="<?= escape($values['email']) ?>" required></div>
+<div class="field"><label for="phone">Téléphone <span class="muted">(facultatif)</span></label><input id="phone" name="phone" type="tel" maxlength="20" autocomplete="tel" value="<?= escape($values['phone']) ?>"></div>
+<div class="field-grid"><div class="field"><label for="password">Mot de passe</label><input id="password" name="password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></div><div class="field"><label for="password-confirmation">Confirmer</label><input id="password-confirmation" name="password_confirmation" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></div></div>
+<label class="field-help"><input type="checkbox" name="accept_terms" value="1" required> J'ai lu les <a class="text-link" href="<?= escape(appUrl('conditions.php')) ?>">conditions de réservation</a>.</label><button class="button button-wide" type="submit">Créer mon compte <span aria-hidden="true">↗</span></button></form><div class="auth-bottom">Déjà un compte ? <a href="<?= escape(appUrl('connexion.php')) ?>">Se connecter</a></div></section></div>
+<?php pageFooter(); ?>

@@ -1,15 +1,8 @@
 <?php
-
-session_start();
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: mon-compte.php');
-    exit;
-}
-
+require_once __DIR__ . '/app/bootstrap.php';
+requirePost();
 $_SESSION = [];
-
+$params = session_get_cookie_params();
+setcookie(session_name(), '', ['expires' => time() - 42000, 'path' => $params['path'], 'secure' => $params['secure'], 'httponly' => true, 'samesite' => 'Lax']);
 session_destroy();
-
-header('Location: connexion.php');
-exit;
+redirectTo('connexion.php');
