@@ -1,5 +1,13 @@
 # 🚗 Location Platform
 
+## 🌐 Le site en ligne
+
+👉 **[Visiter Rayane Cars](https://rayane-cars.infinityfreeapp.com/)**
+
+**Hébergé sur [InfinityFree](https://www.infinityfree.com/)** — l’application PHP et sa base MySQL tournent sur cet hébergement. Le code source reste disponible dans ce dépôt GitHub.
+
+![Aperçu de Rayane Cars hébergé sur InfinityFree](docs/screenshots/infinityfree-home.jpg)
+
 Un site de location de voitures que je développe en PHP, avec un catalogue, un espace client et un espace de gestion pour les agents.
 
 L’idée est simple : choisir une voiture, vérifier les dates et envoyer une demande de réservation. Côté agent, tout se passe dans un tableau de bord pour gérer le parc et suivre les demandes. 🔑

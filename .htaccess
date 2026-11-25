@@ -2,6 +2,9 @@ Options -Indexes
 DirectoryIndex index.php
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP_HOST} ^rayane-cars\.infinityfreeapp\.com$ [NC]
+RewriteRule ^ https://rayane-cars.infinityfreeapp.com%{REQUEST_URI} [R=301,L]
 RewriteRule ^(?:app|config|database|tests|tools|var|docs|\.git|\.agents|\.codex)(?:/|$) - [F,L]
 </IfModule>
 <FilesMatch "^(?:\.|README\.md|server_router\.php)">
