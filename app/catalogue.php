@@ -34,6 +34,23 @@ function vehicleDetails(PDO $connection, int $id, bool $includeHidden = false): 
     return $query->fetch();
 }
 
+function publicVehicleIdForModel(PDO $connection, string $brand, string $model): ?int
+{
+    $query = $connection->prepare(
+        "SELECT a.id
+         FROM articles a
+         JOIN vehicle_models m ON m.id = a.vehicle_model_id
+         JOIN vehicle_brands b ON b.id = m.brand_id
+         WHERE a.is_active = 1 AND b.name = :brand AND m.name = :model
+         ORDER BY CASE WHEN a.status = 'disponible' THEN 0 ELSE 1 END, a.id
+         LIMIT 1"
+    );
+    $query->execute(['brand' => $brand, 'model' => $model]);
+    $id = $query->fetchColumn();
+
+    return $id === false ? null : (int) $id;
+}
+
 function cataloguePage(PDO $connection, array $input, int $perPage = 9): array
 {
     $conditions = ['a.is_active = 1', 'm.id IS NOT NULL'];

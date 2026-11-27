@@ -2,13 +2,26 @@
 require_once __DIR__ . '/app/bootstrap.php';
 $connection = database();
 $featured = cataloguePage($connection, [], 3)['vehicles'];
+$heroModel = catalogueMedia()['bmw-serie-3'];
+$heroVehicleId = publicVehicleIdForModel($connection, $heroModel['brand'], $heroModel['model']);
+$heroLink = $heroVehicleId !== null ? 'voiture.php?id=' . $heroVehicleId : 'catalogue.php';
 $brands = $connection->query('SELECT id, name FROM vehicle_brands ORDER BY name')->fetchAll();
 pageHeader('Location de voitures au Maroc', 'home');
 ?>
 <div class="container">
 <section class="hero">
 <div class="hero-copy"><p class="hero-label">LOCATION DE VOITURES AU MAROC</p><h1>Votre location<br>de voiture,<br><em>en toute clarté.</em></h1><p class="lead">Un week-end, un déplacement ou un nouveau départ. Comparez nos modèles, choisissez vos dates et préparez votre prochain trajet.</p><div class="hero-actions"><a class="button" href="<?= escape(appUrl('catalogue.php')) ?>">Découvrir nos voitures <span aria-hidden="true">↗</span></a><a class="text-link" href="#comment-ca-marche">Comment ça marche →</a></div><div class="hero-proof"><span>Prix transparents en MAD</span><span>Suivi de votre réservation</span></div></div>
-<div class="hero-art"><div class="art-top"><span>PLUS QU'UNE DESTINATION</span><span>NOTRE SÉLECTION</span></div><img src="<?= escape(appUrl('assets/images/voitures/bmw-serie-3.webp')) ?>" alt="BMW Série 3 bleue, vue trois quarts avant en studio clair" width="1536" height="1024" fetchpriority="high"><div class="art-bottom"><span>À chaque envie,<strong>son prochain trajet.</strong></span><span class="art-arrow" aria-hidden="true">↗</span></div></div>
+<div class="hero-art">
+    <div class="art-top"><span>PLUS QU'UNE DESTINATION</span><span>NOTRE SÉLECTION</span></div>
+    <img src="<?= escape(appUrl('assets/images/voitures/bmw-serie-3.webp')) ?>" alt="BMW Série 3 bleue, vue trois quarts avant en studio clair" width="1536" height="1024" fetchpriority="high">
+    <div class="art-bottom">
+        <span>À chaque envie,<strong>son prochain trajet.</strong></span>
+        <a class="button art-link" href="<?= escape(appUrl($heroLink)) ?>">
+            <?= $heroVehicleId !== null ? 'Voir le véhicule' : 'Voir le catalogue' ?>
+            <span aria-hidden="true">↗</span>
+        </a>
+    </div>
+</div>
 </section>
 <form class="search-panel" action="<?= escape(appUrl('catalogue.php')) ?>" method="get" aria-label="Rechercher une voiture">
 <div class="field"><label for="home-brand">Votre marque</label><select id="home-brand" name="brand"><option value="">Toutes les marques</option><?php selectOptions($brands, ''); ?></select></div>

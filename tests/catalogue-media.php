@@ -49,6 +49,20 @@ try {
         check($page['status'] === 200 && !preg_match('/démonstration|voiture fictive|données fictives/iu', $page['body']), $path . ' sans mention temporaire');
     }
 
+    $idsByPhoto = array_column($rows, 'id', 'image_path');
+    $bmwId = $idsByPhoto['assets/images/voitures/bmw-serie-3.webp'];
+    $visibility = $connection->prepare('UPDATE articles SET is_active = :visible WHERE id = :id');
+
+    foreach ([1 => '/voiture.php?id=' . $bmwId, 0 => '/catalogue.php'] as $visible => $destination) {
+        $visibility->execute(['visible' => $visible, 'id' => $bmwId]);
+        $home = requestPage('index.php');
+        $document = new DOMDocument();
+        $document->loadHTML($home['body'], LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_NONET);
+        $link = (new DOMXPath($document))->query('//div[@class="hero-art"]//a[@href]')->item(0);
+        check($home['status'] === 200 && $link?->getAttribute('href') === $destination,
+            $visible ? 'La selection BMW ouvre sa fiche publique' : 'La selection ouvre le catalogue si la BMW est masquee');
+    }
+
     echo $passed . " verifications des medias reussies.\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");
