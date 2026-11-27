@@ -6,7 +6,7 @@
     <meta name="description" content="Trouvez votre prochaine voiture de location. Comparez les modèles, choisissez vos dates et suivez vos réservations en toute simplicité.">
     <title><?= escape($title) ?> · RayaneCars</title>
     <link rel="icon" href="<?= escape(appUrl('assets/favicon.svg')) ?>" type="image/svg+xml">
-    <link rel="stylesheet" href="<?= escape(appUrl('assets/style.css')) ?>">
+    <link rel="stylesheet" href="<?= escape(appUrl('assets/style.css?v=' . filemtime(dirname(__DIR__, 2) . '/assets/style.css'))) ?>">
     <script src="<?= escape(appUrl('assets/app.js')) ?>" defer></script>
 </head>
 <body>
